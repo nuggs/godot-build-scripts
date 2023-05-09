@@ -27,7 +27,7 @@ do
         C) cores=${OPTARG};;
         e) exports="yes";;
         h)
-            printf "$usage"
+            printf '..%s..' "$usage"
             exit 0
         ;;
         m) modules="custom_modules=../modules4";;
@@ -35,6 +35,7 @@ do
         s) shared="yes";;
         t) target=${OPTARG};;
         w) wren="yes";;
+        *) return;;
     esac
 done
 
@@ -69,10 +70,10 @@ build_wren() {
     # If we're building windows exports, we need to use mingw.
     if [ "$platform" == "windows" ]
     then
-        cd $wren_dir/projects/make.mingw
+        cd $wren_dir/projects/make.mingw || return
     elif [ "$platform" == "x11" ]
     then
-        cd $wren_dir/projects/make
+        cd $wren_dir/projects/make || return
     fi
 
     # Clean makes every times.  :D
@@ -82,16 +83,16 @@ build_wren() {
         make config=release_32bit $wren_shared
         if [ "$wren_shared" == "wren_shared" ]
         then
-            cp $wren_dir/lib32/libwren.so $base_dir/bin/
+            cp $wren_dir/lib32/libwren.so "$base_dir"/bin/
         fi
     else
         make config=release_64bit $wren_shared
         if [ "$wren_shared" == "wren_shared" ]
         then
-            cp $wren_dir/lib/libwren.so $base_dir/bin/
+            cp $wren_dir/lib/libwren.so "$base_dir"/bin/
         fi
     fi
-    cd $base_dir
+    cd "$base_dir" || return
 }
 
 # Just checking if wren is already compiled, if it's not we'll need to do so.
@@ -135,8 +136,8 @@ fi
 if [ "$exports" == "yes" ]
 then
     build_wren
-    scons -j$cores platform=$platform target=release_debug tools=no $modules modules_shared=no bits=$bits;
-    scons -j$cores platform=$platform target=release tools=no $modules modules_shared=no bits=$bits;
+    scons -j"$cores" platform="$platform" target=release_debug tools=no "$modules" modules_shared=no bits="$bits";
+    scons -j"$cores" platform="$platform" target=release tools=no "$modules" modules_shared=no bits="$bits";
     exit 0
 fi
 
@@ -145,5 +146,5 @@ then
     build_wren
 fi
 
-scons -j$cores platform=$platform target=$target $modules modules_shared=$shared bits=$bits $clean
+scons -j"$cores" platform="$platform" target="$target" "$modules" modules_shared="$shared" bits="$bits" "$clean"
 
