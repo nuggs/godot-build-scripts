@@ -136,8 +136,8 @@ fi
 if [ "$exports" == "yes" ]
 then
     build_wren
-    scons -j"$cores" platform="$platform" target=release_debug tools=no "$modules" modules_shared=no bits="$bits";
-    scons -j"$cores" platform="$platform" target=release tools=no "$modules" modules_shared=no bits="$bits";
+    scons -j"$cores" platform="$platform" target=template_debug tools=no "$modules" modules_shared=no bits="$bits";
+    scons -j"$cores" platform="$platform" target=template_release tools=no "$modules" modules_shared=no bits="$bits";
     exit 0
 fi
 
